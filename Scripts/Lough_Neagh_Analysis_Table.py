@@ -20,8 +20,7 @@ target_lmas = [
     "Upper Bann",
     "Moyola",
     "Ballinderry",
-    "Six Mile Water",
-    "Braid and Main"
+    "Six Mile Water"
 ]
 
 # LOOP THROUGH LMAs / PREPARE GEOMETRY FOR SPATIAL FILTERING
