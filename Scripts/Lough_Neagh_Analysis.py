@@ -1,4 +1,5 @@
-# Imports for geospatial data, mapping, and plotting
+# IMPORTS FOR GEOSPATIAL DATA, MAPPING, AND PLOTTING
+
 import os
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -7,7 +8,8 @@ import cartopy.crs as ccrs
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 
-# Helper functions for legend handles and scale bar
+# HELPER FUNCTIONS FOR LEGEND HANDLES AND SCALE BAR
+
 def generate_handles(labels, colors, edge='k', alpha=1):
     """
     Generate matplotlib patch handles to create a legend of each of the features in the map.
@@ -75,18 +77,25 @@ def scale_bar(ax, length=20, location=(0.92, 0.95)):
     return ax
 
 
-# Load outline and water shapefiles
+# LOAD OUTLINE AND WATER SHAPEFILES
+
 outline = gpd.read_file('../Data/NI_outline.shp')
 water = gpd.read_file('../Data/Water.shp')
-lmas = gpd.read_file('../Data/LMAs/LMAs.shp')
-discharges = gpd.read_file('../Data/treated_discharges/treated_discharges.shp')
-waterbodies = gpd.read_file('../Data//WFD_River_Water_Bodies_2016/WFD_River_Water_Bodies_2016.shp')
+lmas = gpd.read_file('../Data/LMAs.shp')
+discharges = gpd.read_file('../Data/treated_discharges.shp')
+waterbodies = gpd.read_file('../Data/WFD_River_Water_Bodies_2016.shp')
 
 
-# Set Up Map Projection and Figure
+# SET UP MAP PROJECTION AND FIGURE
+
 
 # UTM Zone 29 (NI)
 ni_utm = ccrs.UTM(29)  
+
+# Reproject project layers to match outline CRS
+lmas = lmas.to_crs(outline.crs)
+discharges = discharges.to_crs(outline.crs)
+waterbodies = waterbodies.to_crs(outline.crs)
 
 # Create a figure size 8x8
 fig = plt.figure(figsize=(8, 8))
@@ -95,35 +104,123 @@ fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection=ni_utm)  
 
 # Add NI outline
-outline_feature = ShapelyFeature(outline['geometry'], ni_utm, edgecolor='k', facecolor='w')
+outline_feature = ShapelyFeature(
+    outline['geometry'],
+    ni_utm,
+    edgecolor='k',   # black boundary
+    facecolor='none',# transparent fill (recommended)
+    linewidth=1.5      # thicker outline
+)
 
 # Add all features to the map
-ax.add_feature(outline_feature) # add the features we've created to the map.
+ax.add_feature(outline_feature) # add the features to the map.
 
 # Map extent using outline bounds
 xmin, ymin, xmax, ymax = outline.total_bounds
 ax.set_extent([xmin-5000, xmax+5000, ymin-5000, ymax+5000], crs=ni_utm)  
 
-# Add the water features and set CRS, colours and outline width
-water_feat = ShapelyFeature(water['geometry'], 
-                            ccrs.CRS(water.crs), 
-                            edgecolor='mediumblue',
-                            facecolor='mediumblue', 
-                            linewidth=1) 
-ax.add_feature(water_feat) 
 
-# Create legend
+# Add the lakes and set CRS, colours and outline width
+water_feat = ShapelyFeature(
+    water['geometry'],
+    ccrs.CRS(water.crs),
+    edgecolor='#6baed6',   # lighter outline
+    facecolor='#cfe8f3',   # Very light fill
+    linewidth=0.5
+)
+ax.add_feature(water_feat)
+
+lake_handle = generate_handles(['Lakes'], ['#cfe8f3'])
+
+# ADD ALL PROJECT ANALYSIS LAYERS
+
+# Add Local Management Areas, Treated Effluent Discharges and Waterbodies features
+
+
+# Plot discharges 
+discharge_handle = ax.plot(
+    discharges.geometry.x,
+    discharges.geometry.y,
+    'o',
+    color='red',
+    markersize=3,
+    transform=ccrs.CRS(discharges.crs)
+)
+
+# Plot waterbodies 
+waterbody_feat = ShapelyFeature(
+    waterbodies['geometry'],
+    ccrs.CRS(waterbodies.crs),
+    edgecolor='#3182bd',   # medium blue
+    facecolor='none',
+    linewidth=0.5
+)
+ax.add_feature(waterbody_feat)
+
+waterbody_handle = [mlines.Line2D([], [], color='#3182bd')]
+
+# Plot LMAs 
+lma_feat = ShapelyFeature(
+    lmas['geometry'],
+    ni_utm,
+    edgecolor='blue',   # standard blue
+    facecolor='none',
+    linewidth=0.75
+)
+ax.add_feature(lma_feat)
+
+
+# CREATE LEGEND
+
 water_handle = generate_handles(['Lakes'], ['mediumblue'])
 
-# Add gridlines
-gridlines = ax.gridlines(draw_labels=True, # draw  labels for the grid lines
-                         xlocs=[-8, -7.5, -7, -6.5, -6, -5.5], # add longitude lines at 0.5 deg intervals
-                         ylocs=[54, 54.5, 55, 55.5]) # add latitude lines at 0.5 deg intervals
+lma_handle = [mpatches.Patch(
+    facecolor='none',
+    edgecolor='blue',       # matches LMAs on map
+    label='LMAs'
+)]
+
+waterbody_handle = [mlines.Line2D(
+    [], [], 
+    color='#3182bd',        # matches waterbody lines
+    label='Waterbody'
+)]
+
+discharge_handle = [mlines.Line2D(
+    [], [], 
+    color='red', 
+    marker='o', 
+    linestyle='None', 
+    markersize=3,
+    label='Discharges'
+)]
+
+handles = lake_handle + lma_handle + waterbody_handle + discharge_handle
+labels = ['Lakes', 'LMAs', 'Waterbody', 'Discharges']
+
+ax.legend(
+    handles, labels,
+    title='Legend',
+    title_fontsize=11,
+    fontsize=10,
+    loc='upper left',
+    frameon=True,
+    framealpha=1
+)
+
+
+# ADD GRIDLINES AND SCALE BAR
+
+gridlines = ax.gridlines(draw_labels=True, # Draw  labels for the grid lines
+xlocs=[-8, -7.5, -7, -6.5, -6, -5.5], # add longitude lines at 0.5 deg intervals
+ylocs=[54, 54.5, 55, 55.5]) # add latitude lines at 0.5 deg intervals
 gridlines.left_labels = False # turn off the left-side labels
 gridlines.bottom_labels = False # turn off the bottom labels
 
 # Add a scale bar to the axis
 scale_bar(ax)
 
-# save fig as lough_neagh_map.png, crop to the axis ('tight') with dpi of 300
+# SAVE LOUGH NEAGH ANALYSIS FIGURE
+
+# Save figure as lough_neagh_map.png, crop to the axis ('tight') with dpi of 300
 fig.savefig('map.png', bbox_inches='tight', dpi=300)
