@@ -223,4 +223,5 @@ scale_bar(ax)
 # SAVE LOUGH NEAGH ANALYSIS FIGURE
 
 # Save figure as lough_neagh_map.png, crop to the axis ('tight') with dpi of 300
-fig.savefig('map.png', bbox_inches='tight', dpi=300)
+fig.savefig("../Outputs/Map of Lough Neagh Treated Discharges.png", bbox_inches='tight', dpi=300)
+
