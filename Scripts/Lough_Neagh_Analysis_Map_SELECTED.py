@@ -166,16 +166,16 @@ lake_handle = generate_handles(['Lakes'], ['#cfe8f3'])
 
 # Add Local Management Areas, Treated Effluent Discharges and Waterbodies features
 
-
-# Plot discharges 
+# Plot discharges in selected LMAs only
 discharge_handle = ax.plot(
-    discharges.geometry.x,
-    discharges.geometry.y,
+    discharges_in_lmas.geometry.x,
+    discharges_in_lmas.geometry.y,
     'o',
     color='red',
     markersize=3,
-    transform=ccrs.CRS(discharges.crs)
+    transform=ccrs.CRS(discharges_in_lmas.crs)
 )
+
 
 # Convert waterbodies to EPSG:4326 (lon/lat). Cartopy requires ShapelyFeature geometry in PlateCarree,
 # even when the map projection is UTM. This avoids Cartopy extent warnings and ensures correct rendering.
