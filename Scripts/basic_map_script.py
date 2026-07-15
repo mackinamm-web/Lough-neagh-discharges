@@ -79,7 +79,6 @@ def scale_bar(ax, length=20, location=(0.92, 0.95)):
 outline = gpd.read_file('../Data/NI_outline.shp')
 water = gpd.read_file('../Data/Water.shp')
 
-
 # Set Up Map Projection and Figure
 
 # UTM Zone 29 (NI)
@@ -101,13 +100,22 @@ ax.add_feature(outline_feature) # add the features we've created to the map.
 xmin, ymin, xmax, ymax = outline.total_bounds
 ax.set_extent([xmin-5000, xmax+5000, ymin-5000, ymax+5000], crs=ni_utm)  
 
-# Add the water features and set CRS, colours and outline width
-water_feat = ShapelyFeature(water['geometry'], 
-                            ccrs.CRS(water.crs), 
-                            edgecolor='mediumblue',
-                            facecolor='mediumblue', 
-                            linewidth=1) 
-ax.add_feature(water_feat) 
+# Convert water to lon/lat (EPSG:4326). Cartopy expects ShapelyFeature geometry in PlateCarree,
+# even when the map projection is UTM. This prevents extent warnings and ensures correct rendering.
+
+water_ll = water.to_crs(epsg=4326)
+
+# Add water features (lon/lat geometry)
+water_feat = ShapelyFeature(
+    water_ll['geometry'],
+    ccrs.PlateCarree(),
+    edgecolor='mediumblue',
+    facecolor='mediumblue',
+    linewidth=1
+)
+
+ax.add_feature(water_feat)
+
 
 # Create legend
 water_handle = generate_handles(['Lakes'], ['mediumblue'])

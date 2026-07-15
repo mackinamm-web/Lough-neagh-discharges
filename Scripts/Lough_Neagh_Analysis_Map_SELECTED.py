@@ -127,9 +127,12 @@ fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection=ni_utm)  
 
 # Add NI outline
+
+outline_ll = outline.to_crs(epsg=4326)
+
 outline_feature = ShapelyFeature(
-    outline['geometry'],
-    ni_utm,
+    outline_ll['geometry'],
+    ccrs.PlateCarree(),
     edgecolor='k',   # black boundary
     facecolor='none',# transparent fill (recommended)
     linewidth=1.5      # thicker outline
@@ -142,16 +145,20 @@ ax.add_feature(outline_feature) # add the features to the map.
 xmin, ymin, xmax, ymax = outline.total_bounds
 ax.set_extent([xmin-5000, xmax+5000, ymin-5000, ymax+5000], crs=ni_utm)  
 
+# Convert water to lon/lat (EPSG:4326). Cartopy expects ShapelyFeature geometry in PlateCarree,
+# even when the map projection is UTM. This prevents extent warnings and ensures correct rendering.
+water_ll = water.to_crs(epsg=4326)
 
-# Add the lakes and set CRS, colours and outline width
+# Add water features using lon/lat geometry and PlateCarree CRS, set colours and outline width
 water_feat = ShapelyFeature(
-    water['geometry'],
-    ccrs.CRS(water.crs),
+    water_ll['geometry'], 
+    ccrs.PlateCarree(),
     edgecolor='#6baed6',   # lighter outline
     facecolor='#cfe8f3',   # Very light fill
     linewidth=0.5
 )
 ax.add_feature(water_feat)
+
 
 lake_handle = generate_handles(['Lakes'], ['#cfe8f3'])
 
@@ -160,21 +167,25 @@ lake_handle = generate_handles(['Lakes'], ['#cfe8f3'])
 # Add Local Management Areas, Treated Effluent Discharges and Waterbodies features
 
 
-# Plot ONLY discharges inside selected LMAs
+# Plot discharges 
 discharge_handle = ax.plot(
-    discharges_in_lmas.geometry.x,
-    discharges_in_lmas.geometry.y,
+    discharges.geometry.x,
+    discharges.geometry.y,
     'o',
     color='red',
     markersize=3,
-    transform=ccrs.CRS(discharges_in_lmas.crs)
+    transform=ccrs.CRS(discharges.crs)
 )
 
+# Convert waterbodies to EPSG:4326 (lon/lat). Cartopy requires ShapelyFeature geometry in PlateCarree,
+# even when the map projection is UTM. This avoids Cartopy extent warnings and ensures correct rendering.
 
-# Plot waterbodies 
+waterbodies_ll = waterbodies.to_crs(epsg=4326)
+
+# Add waterbody features using geographic CRS (PlateCarree), set colours and outline width
 waterbody_feat = ShapelyFeature(
-    waterbodies['geometry'],
-    ccrs.CRS(waterbodies.crs),
+    waterbodies_ll['geometry'],
+    ccrs.PlateCarree(),
     edgecolor='#3182bd',   # medium blue
     facecolor='none',
     linewidth=0.5
@@ -183,16 +194,21 @@ ax.add_feature(waterbody_feat)
 
 waterbody_handle = [mlines.Line2D([], [], color='#3182bd')]
 
-# Plot LMAs 
+
+# Convert LMAs to EPSG:4326 (lon/lat). Cartopy requires ShapelyFeature geometry in PlateCarree,
+# even when the map projection is UTM. This avoids Cartopy extent warnings and ensures correct rendering.
+
+lmas_ll = lmas.to_crs(epsg=4326)
+
+# Add LMA features using geographic CRS (PlateCarree), set colours and outline width
 lma_feat = ShapelyFeature(
-    lmas['geometry'],
-    ni_utm,
+    lmas_ll['geometry'],
+    ccrs.PlateCarree(),
     edgecolor='blue',   # standard blue
     facecolor='none',
     linewidth=0.75
 )
 ax.add_feature(lma_feat)
-
 
 # CREATE LEGEND
 
