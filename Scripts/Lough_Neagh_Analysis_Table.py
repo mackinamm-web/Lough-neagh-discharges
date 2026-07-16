@@ -82,8 +82,21 @@ output = pd.DataFrame({
 })
 
 
+# SUMMARY OF DISCHARGES
 print("\nSummary of discharges inside selected LMAs:")
 print(output)
+
+# TOTAL NUMBER OF DISCHARGES
+print("\nTotal number of discharges in selected LMAs:", len(combined))
+
+# NUMBER OF DISCHARGES PER LMA
+print("\nNumber of discharges per LMA:")
+print(combined["LMA"].value_counts())
+
+# NUMBER OF DISCHARGES PER WATERBODY
+print("\nTop 10 waterbodies with the most discharges:")
+print(combined["namespace"].value_counts().head(10))
+
 
 # EXPORT TO EXCEL
 
