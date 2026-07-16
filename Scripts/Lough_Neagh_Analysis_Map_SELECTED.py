@@ -1,3 +1,18 @@
+"""
+
+Lough Neagh Treated Effluent Discharges Mapping Script
+
+This script loads geospatial datasets for Northern Ireland, filters for Local Management Areas (water catchments) connected to Lough Neagh and identifies treated effluent discharges within those LMAs.
+
+The LMAs included in this analysis are: Lough Neagh, River Blackwater, Upper Bann, 
+Moyola, Ballinderry, and Six Mile Water.
+
+The script produces a background base map displaying lakes, in addition to LMAs, waterbodies and discharge points within Lough Neagh LMAs. 
+
+The final output map is saved as a PNG figure in the Outputs folder: Map of Lough Neagh Treated Discharges.png
+
+"""
+
 # IMPORTS FOR GEOSPATIAL DATA, MAPPING, AND PLOTTING
 
 import os
