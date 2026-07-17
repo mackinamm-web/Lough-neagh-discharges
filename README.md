@@ -1,6 +1,6 @@
 # Identifying Treated Wastewater Discharges to Lough Neagh Catchments
-Python-based analysis of Wastewater Treatment Works (WwTWs) treated effluent discharges into the Lough Neagh catchment.  
-The workflow identifies discharge points within Local Management Areas (LMAs) that drain to Lough Neagh and produces both map and tabular outputs.
+- Python-based analysis of Wastewater Treatment Works (WwTWs) treated effluent discharges into the Lough Neagh catchment.  
+- The workflow identifies discharge points within Local Management Areas (LMAs) that drain to Lough Neagh and produces both map and tabular outputs.
 
 ## Installation
 
@@ -52,7 +52,7 @@ Outputs are saved to the `Outputs/` directory:
 
 ```text
 ├── Data/                 # Input shapefiles used in the analysis
-├── Notebooks/            # Jupyter notebooks for mapping and tabular analysis
+├── Notebooks/            # Jupyter notebook for mapping and tabular analysis
 │   └── Lough_Neagh_Discharge_Analysis.ipynb
 ├── Outputs/              # Generated output map and Excel table
 ├── Scripts/              # Python scripts for mapping and tabular processing
