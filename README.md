@@ -2,21 +2,21 @@
 - Python-based analysis of Wastewater Treatment Works (WwTWs) treated effluent discharges into the Lough Neagh catchment.  
 - The workflow identifies discharge points within Local Management Areas (LMAs) that drain to Lough Neagh and produces both map and tabular outputs.
 
-## Installation
+## 1. Installation
 
-### 1. Clone the repository
+### 1.1 Clone the repository
 ```bash
 git clone https://github.com/mackinamm-web/Lough-neagh-discharges.git
 cd Lough-neagh-discharges
 ```
 
-### 2. Create the Conda environment
+### 1.2. Create the Conda environment
 ```bash
 conda env create -f environment.yml
 conda activate loughneagh
 ```
 
-### 3. Input datasets
+### 1.3. Input datasets
 All required spatial datasets are included in the `Data/` directory:
 
 - NI_outline.shp  
@@ -25,7 +25,7 @@ All required spatial datasets are included in the `Data/` directory:
 - treated_discharges.shp  
 - WFD_River_Water_Bodies_2016.shp
 
-## Running the notebook
+## 2. Running the notebook
 
 Launch Jupyter Lab:
 
@@ -48,7 +48,7 @@ Outputs are saved to the `Outputs/` directory:
 - Map of Lough Neagh Treated Discharges.png
 - Lough_Neagh_Treated_Discharges.xlsx
 
-## Project structure
+## 3. Project structure
 
 ```text
 ├── Data/                 # Input shapefiles used in the analysis
@@ -62,7 +62,7 @@ Outputs are saved to the `Outputs/` directory:
 └── environment.yml       # Conda environment specification
 ```
 
-## License
+## 4. License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
 This means anyone is free to use, copy, modify, merge, publish, distribute, or build upon the code, provided they include the original licence notice.
