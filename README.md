@@ -13,7 +13,7 @@ cd Lough-neagh-discharges
 ### 1.2. Create the Conda environment
 ```bash
 conda env create -f environment.yml
-conda activate loughneagh
+conda activate Lough-neagh-discharges
 ```
 
 ### 1.3. Input datasets
